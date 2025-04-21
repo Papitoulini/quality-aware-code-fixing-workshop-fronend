@@ -1,21 +1,21 @@
 import PropTypes from "prop-types";
-import { Navigate, useLocation } from "react-router-dom";
-import queryString from "query-string";
+import { Navigate } from "react-router-dom";
+import { shallow } from "zustand/shallow";
 
-import { jwt } from "../utils/index.js";
-
-const maybeSetToken = (Component) => (props) => {
-	const { search } = useLocation();
-	const { token } = queryString.parse(search);
-	if (token) jwt.setToken(token);
-	return <Component {...props} />;
-};
+import useGlobalState from "../use-global-state.js";
+import { useUser } from "#api";
 
 const Protected = ({ c }) => {
-	const location = useLocation();
-	return jwt.isAuthenticated() ? c : <Navigate replace to="/" state={{ from: location }} />;
+	const { id } = useGlobalState((e) => ({
+		id: e.id,
+	}), shallow);
+
+	const { user = {} } = useUser(id);
+	
+	console.log(user, 11)
+	return user ? c : <Navigate replace to="/login" state={{ from: location }} />;
 };
 
 Protected.propTypes = { c: PropTypes.node.isRequired };
 
-export default maybeSetToken(Protected);
+export default Protected;

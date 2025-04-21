@@ -1,87 +1,42 @@
 import { createTheme } from "@mui/material/styles";
 import { red, green, deepOrange, yellow } from "@mui/material/colors";
 
+import colors from './colors.module.scss';
+
+import { adjustColors, colorSuggestions } from "#utils";
+
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: "#00426e",
-			light: "#005792",
+			main: colors.primary,
+			light: adjustColors(colors.primary, 100),
+			dark: adjustColors(colors.primary, -80),
 		},
 		secondary: {
-			main: "#00cbc4",
+			main: colors.secondary || colorSuggestions.secondary,
+			light: adjustColors(colors.secondary || colorSuggestions.secondary, 100),
+			dark: adjustColors(colors.secondary || colorSuggestions.secondary, -80),
+		},
+		third: {
+			main: colors.third || colorSuggestions.third,
+			light: adjustColors(colors.third || colorSuggestions.third, 100),
+			dark: adjustColors(colors.third || colorSuggestions.third, -80),
 		},
 
-		success: { 900: "#336600", main: "#90cb1b" },
-		error: { 900: '#990000', main: "#ff1a22" },
-		warning: {
-			main: "#ff9f00",
+		success: { main: colors.success },
+		error: { main: colors.error },
+		warning: { main: colors.warning },
+		info: { main: colors.info },
+
+		dark: { main: colors.dark },
+		light: { main: colors.light },
+		grey: {
+			main: colors.grey,
+			light: colors.greyLight,
+			dark: colors.greyDark,
 		},
-
-		info: { main: "#006ba4" },
-
-		pink: { main: "#d53a76" },
-
-		cardHeader: { main: "#00426e" },
-		cardBackgroundDark: { main: "#ccd9e2" },
-		cardBackgroundLight: { main: "#dfeaf1" },
-
-		buttonPrimary: { main: "#005792" },
-		buttonSecondary: { main: "#00cbc4" },
-
-		kanbanBacklog: { main: "#ccd9e2" },
-		kanbanSprintPlanning: { main: "#669abe" },
-		kanbanInProgress: { main: "#66e0dc" },
-		kanbanDelivered: { main: "#e383ab" },
-		kanbanAccepted: { main: "#90c56d" },
-
-		workloadBacklog: { main: "#99b3c5" },
-		workloadSprintPlanning: { main: "#006ba4" },
-		workloadInProgress: { main: "#33d5d0" },
-		workloadDelivered: { main: "#da5a8f" },
-		workloadAccepted: { main: "#a6d549" },
-		workloadArchived: { main: "#cccccc" },
-
-		workloadBacklogDefault: { main: "#99b3c5" },
-		workloadSprintPlanningDefault: { main: "#006ba4" },
-		workloadInProgressDefault: { main: "#33d5d0" },
-		workloadDeliveredDefault: { main: "#da5a8f" },
-		workloadAcceptedDefault: { main: "#a6d549" },
-		workloadArchivedDefault: { main: "#cccccc" },
-
-		workloadBacklogMonochrome: { main: "#ebf0f3" },
-		workloadSprintPlanningMonochrome: { main: "#d2dde5" },
-		workloadInProgressMonochrome: { main: "#99b3c5" },
-		workloadDeliveredMonochrome: { main: "#668ea8" },
-		workloadAcceptedMonochrome: { main: "#33688b" },
-		workloadArchivedMonochrome: { main: "#cccccc" },
-
-		workloadBacklogVivid: { main: "#6bb764" },
-		workloadSprintPlanningVivid: { main: "#39c0c4" },
-		workloadInProgressVivid: { main: "#feda1e" },
-		workloadDeliveredVivid: { main: "#f7941d" },
-		workloadAcceptedVivid: { main: "#f15c63" },
-		workloadArchivedVivid: { main: "#cccccc" },
-
-		workloadBacklogEarth: { main: "#ded9d3" },
-		workloadSprintPlanningEarth: { main: "#7f959b" },
-		workloadInProgressEarth: { main: "#c99256" },
-		workloadDeliveredEarth: { main: "#a5665c" },
-		workloadAcceptedEarth: { main: "#eb957c" },
-		workloadArchivedEarth: { main: "#cccccc" },
-
-		workloadBacklogPostIt: { main: "#f0f58f" },
-		workloadSprintPlanningPostIt: { main: "#a9edf0" },
-		workloadInProgressPostIt: { main: "#74ed4a" },
-		workloadDeliveredPostIt: { main: "#ffa930" },
-		workloadAcceptedPostIt: { main: "#ff32b1" },
-		workloadArchivedPostIt: { main: "#cccccc" },
-
-		workloadBacklogChristmas: { main: "#062741" },
-		workloadSprintPlanningChristmas: { main: "#BF9E60" },
-		workloadInProgressChristmas: { main: "#02733E" },
-		workloadDeliveredChristmas: { main: "#BF213E" },
-		workloadAcceptedChristmas: { main: "#731224" },
-		workloadArchivedChristmas: { main: "#cccccc" },
+		green: { main: colors.green },
+		white: { main: "#ffffff" },
 
 		epic: { main: "#ff484e" },
 		red,

@@ -1,0 +1,23 @@
+$theme: (
+    'primary': #00426E,
+    'secondary': #00CBC4,
+    'third': #D13173,
+
+    'success': #90CB1B,
+    'error': #FF484E,
+    'warning': #FF9F00,
+    'info': #006BA4,
+
+    'dark': #005792,
+    'light': #F1A542,
+    'grey': #CCD9E2,
+    'greyLight': #F2F2F2,
+    'greyDark': #CCCCCC,
+    'green': #66E0DC,
+);
+
+:export {
+    @each $key, $value in $theme {
+        #{unquote($key)}: $value;
+    }
+}

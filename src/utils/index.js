@@ -15,7 +15,9 @@ export { default as getColorForQualityScore } from "./get-color-for-quality-scor
 export { default as convertQualityScoreToLetter } from "./convert-quality-score-to-letter.js";
 export { default as sum } from "./sum.js";
 export { default as mapOverviewToMetrics } from "./map-overview-to-metrics.js";
-export { default as levelThresholds } from "./characteristics-thresholds.js";
+export { default as validations } from "./validations.js";
+export { default as colorSuggestions } from "./color-suggestion.js";
+export { default as adjustColors } from "./adjust-colors.js";
 export const MUTATION_DELAY_IN_MS = 500;
 export const POSSIBLE_LANGUAGES = new Set(["JavaScript", "TypeScript", "Java", "C#", "Python", "PHP", "Kotlin", "Dart"]);
 export const POSSIBLE_VULNERABILITIES_SEVERITY = new Set(["critical", "high", "moderate", "low" ]);

@@ -1,14 +1,15 @@
 import { memo } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import { AppBar, Toolbar, Paper, Breadcrumbs, Box, IconButton } from "@mui/material";
+import { AppBar, Toolbar, Paper, Breadcrumbs, Box } from "@mui/material";
 
-import { Home as HomeIcon, Settings, Logout, AccountCircle } from "@mui/icons-material";
-import cycloptLogo from "../assets/images/cyclopt_logo_with_text_white.svg";
+import { Home as HomeIcon } from "@mui/icons-material";
+// import cycloptLogo from "../assets/images/cyclopt_logo_with_text_white.svg";
+import IsselLogo from "../assets/images/Issel_Blue_Horizontal.svg";
+
 import { Image } from "mui-image";
 
-import Tooltip from "./Tooltip.jsx"
-import { cookie, jwt, capitalize } from "#utils";
+import { capitalize } from "#utils";
 
 const styles = {
 	grow: {
@@ -81,49 +82,55 @@ const styles = {
 
 const Header = () => {
 	const location = useLocation();
-	const navigate = useNavigate();
 	const CrumpLink = styled(Link)(({ theme }) => ({ display: "flex", color: theme.palette.primary.main }));
 
 	const pathnames = location.pathname.split("/").filter(Boolean).map((res) => decodeURIComponent(res));
 	const crumps = [];
 	crumps.push(
-		<CrumpLink to="/" style={{ textDecoration: "none" }}> <HomeIcon sx={styles.icon} /> {"Home"} </CrumpLink>,
-		pathnames.length === 1
-			?  <CrumpLink to={`/${pathnames.join("/")}`} style={{ textDecoration: "none" }}>{capitalize(pathnames.join("/"))}</CrumpLink>
-			: <CrumpLink to={`/${pathnames.join("/")}`} style={{ textDecoration: "none" }}>{pathnames.join("/")}</CrumpLink>
+		<CrumpLink to="/">
+			<HomeIcon sx={styles.icon} />
+			{"Home"}
+		</CrumpLink>,
 	);
+
+	for (const [ind, path] of pathnames.entries()) {
+		let text = "...";
+
+		if ([
+			"login",
+		].includes(path)) text = capitalize(path);
+		else {
+			switch (path) {
+
+			case "getting-started": {
+				text = "Getting Started";
+				break;
+			}
+
+			default:
+				// Do nothing
+			}
+		}
+
+		crumps.push(<CrumpLink to={`/${pathnames.slice(0, ind + 1).join("/")}`}>{text}</CrumpLink>);
+	}
 
 	return (
 		<AppBar position="static" sx={styles.grow}>
 			<Toolbar className="header-container" sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 				<Box component={Link} to="/">
-					<Image src={cycloptLogo} alt="Cyclopt" width="10rem" sx={{ my: 1, minWidth: "130px" }} />
+					<Image src={IsselLogo} alt="Cyclopt" width="10rem" sx={{ my: 1, minWidth: "130px" }} />
 				</Box>
 				<Box sx={{ flexGrow: 1, flexBasis: "auto" }} />
-				{jwt.isAuthenticated() && (
-					<Tooltip title="Jump to configurator">
-						<IconButton color="inherit" component={Link} to="https://configurator.cyclopt.com/companion" target="_blank" rel="noopener noreferrer"><Settings /></IconButton>
-					</Tooltip>
-				)}
-				{jwt.isAuthenticated() && (
-					<Tooltip  title="Log Out">
-						<IconButton color="inherit" onClick={() => {
-							navigate(`/developer/${jwt.decode()?.id}`);
-						}}
-						><AccountCircle /></IconButton>
-					</Tooltip>
-				)}
-				{jwt.isAuthenticated() && (
-					<Tooltip  title="Log Out">
-						<IconButton color="inherit" onClick={() => {
-							// handleMenuClose();
-							jwt.destroyTokens();
-							cookie.remove("_cyclopt_selfhosted");
-							navigate("/");
-						}}
-						><Logout /></IconButton>
-					</Tooltip>
-				)}
+				{/* <Tooltip  title="Log Out">
+					<IconButton color="inherit" onClick={() => {
+						// handleMenuClose();
+						jwt.destroyTokens();
+						cookie.remove("_cyclopt_selfhosted");
+						navigate("/");
+					}}
+					><Logout /></IconButton>
+				</Tooltip> */}
 			</Toolbar>
 			<Paper elevation={0} sx={styles.root}>
 				<Box className="header-container" display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
