@@ -4,8 +4,8 @@ import useSWR from "swr";
 
 const {
 	VITE_SERVER_URL,
-	VITE_SERVER_USERNAME,
-	VITE_SERVER_PASSWORD,
+	// VITE_SERVER_USERNAME,
+	// VITE_SERVER_PASSWORD,
 } = import.meta.env;
 
 const rootApi = ky.extend({
@@ -77,11 +77,13 @@ export const postToQuality = (code, questionId, userId) => {
 	formData.append('file', blob, 'file.js');
 	return rootApi.post("quality", { body: formData }).json();
 };
-export const getSimilarSnippets = (code, questionId, userId) => {
+export const getSimilarSnippets = (code, questionId, userId, model, isBadExample) => {
 	const formData = new FormData();
 	const blob = new Blob([code], { type: 'application/javascript' });
 	formData.append('questionId', questionId);
 	formData.append('userId', userId);
+	formData.append('model', model);
+	formData.append('isBadExample', isBadExample);
 	formData.append('file', blob, 'file.js');
 	return rootApi.post("quoly", { body: formData }).json();
 };

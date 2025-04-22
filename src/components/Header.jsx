@@ -98,6 +98,7 @@ const Header = () => {
 
 		if ([
 			"login",
+			"question",
 		].includes(path)) text = capitalize(path);
 		else {
 			switch (path) {
@@ -111,6 +112,9 @@ const Header = () => {
 				// Do nothing
 			}
 		}
+
+		const num = Number.parseInt(path, 10);
+		if (!Number.isNaN(num)) { text = `#${num}`; }
 
 		crumps.push(<CrumpLink to={`/${pathnames.slice(0, ind + 1).join("/")}`}>{text}</CrumpLink>);
 	}

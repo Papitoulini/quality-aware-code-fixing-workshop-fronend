@@ -1,16 +1,15 @@
 import { memo, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Box } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { shallow } from "zustand/shallow";
 
-import { SecondaryBackgroundButton, SecondaryBorderButton, ThirdBackgroundButton, WhiteBorderButton } from "../components/Buttons.jsx";
+import { SecondaryBackgroundButton, SecondaryBorderButton, ThirdBackgroundButton } from "../components/Buttons.jsx";
 import CodeEditor from "../components/CodeEditor.jsx";
 import Form from "../components/Form.jsx";
-import QualityTable from "../components/QualityTable.jsx";
 import FindingsTable from "../components/FindingsTable.jsx";
 import Popup from "../components/Popup.jsx";
 import Spinner from "../components/Spinner.jsx";
+import Switch from "../components/Switch.jsx";
 import { useSnackbar } from "../utils/index.js";
 import useGlobalState from "../use-global-state.js";
 import { getQuestion, getSimilarSnippets, postToLLM, postToQuality } from "../api/index.js";
@@ -70,6 +69,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+const wrapIndex = (i, length) => length > 0 ? ((i % length) + length) % length : 0;
+
 const Question = () => {
 	const classes = useStyles();
 	const { index } = useParams();
@@ -79,13 +80,16 @@ const Question = () => {
 	const [code, setCode] = useState("");
 	const [quality, setQuality] = useState([]);
 	const [hasNext, setHasNext] = useState(false);
-	const [step, setStep] = useState(1);
+	const [step, setStep] = useState(0);
 	const [llmPopupOpen, setLlmPopupOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [similarSnippetsFetched, setSimilarSnippetsFetched] = useState(false);
 	const [similarSnippets, setSimilarSnippets] = useState([]);
+	const [model, setModel] = useState("llama");
 	const [recommendationIndex, setRecommendationIndex] = useState(0);
 	const id = useGlobalState((state) => state.id);
+
+	// helper for circular index
 
 	const fetchQuestion = async () => {
 		setIsLoading(true);
@@ -101,9 +105,9 @@ const Question = () => {
 		setIsLoading(false);
 	};
 
-	const fetchSimilarSnippets = async () => {
+	const fetchSimilarSnippets = async (isBadExample) => {
 		setIsLoading(true);
-		const { success: fetchSuccess, message, similarSnippets: fetchedSimilarSnippets } = await getSimilarSnippets(question?.code, question?._id, id);
+		const { success: fetchSuccess, message, similarSnippets: fetchedSimilarSnippets } = await getSimilarSnippets(question?.code, question?._id, id, model, isBadExample);
 		if (fetchSuccess) {
 			setSimilarSnippetsFetched(true);
 			setSimilarSnippets(fetchedSimilarSnippets);
@@ -121,7 +125,7 @@ const Question = () => {
 		setSimilarSnippets([]);
 		setRecommendationIndex(0);
 		setLlmPopupOpen(false);
-	}, [index]);
+	}, [index]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const llmFormContent = [
 		{
@@ -156,12 +160,16 @@ const Question = () => {
 	const onLLMSubmit = async (values) => {
 		setIsLoading(true);
 		const { llm, query } = values;
-		const { success: postSuccess, message, ...response } = await postToLLM(llm, question?.code, query, question?._id, id);
+		const { success: postSuccess, message, ...response } = await postToLLM(
+			llm,
+			question?.code,
+			query,
+			question?._id,
+			id
+		);
 		if (postSuccess) {
-			// const { code: { new: newCode }, quality: { new: newQuality } } = response;
-			const { code: { new: newCode } } = response;
-			setCode(newCode);
-			// setQuality(newQuality);
+			const { code: { new: newCode } = {} } = response;
+			if (newCode) setCode(newCode);
 			setLlmPopupOpen(false);
 		} else {
 			error(message);
@@ -169,13 +177,15 @@ const Question = () => {
 		setIsLoading(false);
 	};
 
-	const openLLMPopup = () => {
-		setLlmPopupOpen(true);
-	};
+	const openLLMPopup = () => setLlmPopupOpen(true);
 
 	const analyzeCode = async () => {
 		setIsLoading(true);
-		const { success: postSuccess, message, quality: newQuality } = await postToQuality(code, question?._id, id);
+		const { success: postSuccess, message, quality: newQuality } = await postToQuality(
+			code,
+			question?._id,
+			id
+		);
 		if (postSuccess) {
 			setQuality(newQuality);
 		} else {
@@ -204,15 +214,24 @@ const Question = () => {
 		}
 	};
 
+	const backFromSnippets = () => {
+		setSimilarSnippetsFetched(false);
+		setRecommendationIndex(0);
+	};
+
 	const nextRecommendation = () => {
-		if (recommendationIndex < similarSnippets.length - 1) {
-			setRecommendationIndex(recommendationIndex + 1);
+		if (similarSnippets.length > 0) {
+			setRecommendationIndex(prev =>
+				wrapIndex(prev + 1, similarSnippets.length)
+			);
 		}
 	};
 
 	const previousRecommendation = () => {
-		if (recommendationIndex > 0) {
-			setRecommendationIndex(recommendationIndex - 1);
+		if (similarSnippets.length > 0) {
+			setRecommendationIndex(prev =>
+				wrapIndex(prev - 1, similarSnippets.length)
+			);
 		}
 	};
 
@@ -229,11 +248,19 @@ const Question = () => {
 							{question?.description}
 						</Typography>
 						<Grid item className={classes.main}>
-							<CodeEditor width="100%" height="400px" code={code} language={"javascript"} editable={false} />
+							<CodeEditor
+								width="100%"
+								height="400px"
+								code={code}
+								language="javascript"
+								editable={false}
+							/>
+							{console.log(quality)}
 							<FindingsTable findings={quality} />
 						</Grid>
 					</Grid>
 				)}
+
 				{step === 2 && (
 					<Grid item width="100%">
 						<Typography variant="h6" className={classes.title}>
@@ -243,11 +270,25 @@ const Question = () => {
 							{question?.question}
 						</Typography>
 						<Grid item className={classes.buttonArea}>
-							<ThirdBackgroundButton title="Χρησιμοποίησε LLM" onClick={openLLMPopup} />
-							<WhiteBorderButton title="Ανάλυσε τον κώδικα" className={classes.secondButton} onClick={analyzeCode} />
+							<ThirdBackgroundButton
+								title="Χρησιμοποίησε LLM"
+								onClick={openLLMPopup}
+							/>
+							<ThirdBackgroundButton
+								title="Ανάλυσε τον κώδικα"
+								className={classes.secondButton}
+								onClick={analyzeCode}
+							/>
 						</Grid>
 						<Grid item className={classes.main}>
-							<CodeEditor width="100%" height="400px" code={code} language={"javascript"} editable={true} setCode={setCode} />
+							<CodeEditor
+								width="100%"
+								height="400px"
+								code={code}
+								language="javascript"
+								editable={true}
+								setCode={setCode}
+							/>
 							<FindingsTable findings={quality} />
 						</Grid>
 						<Popup
@@ -259,11 +300,17 @@ const Question = () => {
 							onClose={() => setLlmPopupOpen(false)}
 						>
 							<Grid item className={classes.card}>
-								<Form content={llmFormContent} validationSchema="llmQuery" toResetForm={false} onSubmit={onLLMSubmit} />
+								<Form
+									content={llmFormContent}
+									validationSchema="llmQuery"
+									toResetForm={false}
+									onSubmit={onLLMSubmit}
+								/>
 							</Grid>
 						</Popup>
 					</Grid>
 				)}
+
 				{step === 3 && (
 					<Grid item width="100%">
 						<Typography variant="h6" className={classes.title}>
@@ -272,81 +319,92 @@ const Question = () => {
 						<Typography className={classes.subtitle}>
 							{question?.question}
 						</Typography>
+
+						{!similarSnippetsFetched && (
+							<Grid item className={classes.recommendationsButtonArea}>
+								<Typography className={classes.recommendationsTitle}>
+									{"Αρχικός Κώδικας:"}
+								</Typography>
+								<Box display="flex" alignItems="center">
+									<Typography color="primary">{"Claude"}</Typography>
+									<Switch
+										color="secondary"
+										checked={model === "llama"}
+										size="small"
+										onChange={() => setModel(m => (m === "claude" ? "llama" : "claude"))}
+									/>
+									<Typography color="primary">{"Llama"}</Typography>
+								</Box>
+								<ThirdBackgroundButton
+									title="Εύρεση Προτάσεων"
+									width="250px"
+									onClick={() => fetchSimilarSnippets(false)}
+								/>
+							</Grid>
+						)}
+
 						{similarSnippetsFetched && (
 							<Grid item className={classes.recommendationsButtonArea}>
 								<Typography className={classes.recommendationsTitle}>
 									{`Πρόταση ${recommendationIndex + 1} από ${similarSnippets.length}:`}
 								</Typography>
-								<Grid item>
-									<WhiteBorderButton
+								<Box>
+									<SecondaryBackgroundButton title="Επιστροφή" onClick={backFromSnippets} className={classes.secondButton} />
+									<ThirdBackgroundButton
 										title="Προηγούμενη Πρόταση"
 										width="250px"
-										disabled={recommendationIndex === 0}
+										className={classes.secondButton}
 										onClick={previousRecommendation}
 									/>
 									<ThirdBackgroundButton
 										title="Επόμενη Πρόταση"
-										width="250px"
-										disabled={recommendationIndex === similarSnippets.length - 1}
+										width="200px"
 										className={classes.secondButton}
 										onClick={nextRecommendation}
 									/>
-								</Grid>
+								</Box>
 							</Grid>
 						)}
-						{!similarSnippetsFetched && (
-							<Grid item className={classes.recommendationsButtonArea}>
-								<Typography variant="h6" className={classes.recommendationsTitle}>
-									{"Αρχικός Κώδικας:"}
-								</Typography>
-								<ThirdBackgroundButton title="Εύρεση Προτάσεων" width="250px" onClick={fetchSimilarSnippets} />
-							</Grid>
-						)}
+
 						<Grid item className={classes.main}>
 							<CodeEditor
 								width="100%"
 								height="400px"
-								code={similarSnippetsFetched ? similarSnippets[recommendationIndex].code : question?.code || ""}
-								language={"javascript"}
+								code={
+									similarSnippetsFetched
+										? similarSnippets[recommendationIndex].code
+										: question?.code || ""
+								}
+								language="javascript"
 								editable={false}
 							/>
-							<QualityTable
-								horizontal
-								comparative={similarSnippetsFetched}
-								comparative2={similarSnippetsFetched}
-								width="100%"
-								quality={question?.analysis || {}}
-								quality2={quality || {}}
-								quality3={similarSnippets || {}}
-							/>
+							<FindingsTable findings={quality} />
 						</Grid>
 					</Grid>
 				)}
+
 				<Grid item className={classes.buttonArea}>
 					<SecondaryBorderButton
-						title={step === 1 && index === "1"
-							? "Προφίλ"
-							: (step === 1
-								? "Προηγούμενη Ερώτηση"
-								: (step === 2
-									? "Αρχικός Κώδικας"
-									: "Επεξεργασία"
-								)
-							)
+						title={
+							step === 1 && index === "1"
+								? "Προφίλ"
+								: step === 1
+									? "Προηγούμενη Ερώτηση"
+									: step === 2
+										? "Αρχικός Κώδικας"
+										: "Επεξεργασία"
 						}
-						width="auto"
 						onClick={previousStep}
 					/>
 					<SecondaryBackgroundButton
-						title={step === 1
-							? "Επεξεργασία"
-							: (step === 2
-								? "Προτάσεις Quoly"
-								: (hasNext
-									? "Επόμενη Ερώτηση"
-									: "Ερωτηματολόγιο"
-								)
-							)
+						title={
+							step === 1
+								? "Επεξεργασία"
+								: step === 2
+									? "Προτάσεις Quoly"
+									: hasNext
+										? "Επόμενη Ερώτηση"
+										: "Ερωτηματολόγιο"
 						}
 						className={classes.secondButton}
 						onClick={nextStep}

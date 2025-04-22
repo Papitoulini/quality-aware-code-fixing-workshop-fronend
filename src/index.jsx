@@ -49,7 +49,7 @@ globalThis.global = globalThis;
 const swrConfig = { revalidateOnFocus: false, shouldRetryOnError: false, fetcher: (url) => api.get(url) };
 
 const App = () => {
-	useDocumentTitle("Cyclopt");
+	useDocumentTitle("Workshop");
 
 	return (
 		<StyledEngineProvider injectFirst>
