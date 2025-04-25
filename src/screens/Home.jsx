@@ -10,7 +10,7 @@ const Home = ({}) => {
 				<Grid item xs={12} md={8} lg={6} display="flex" flexDirection="column" alignItems="center">
 					<HomeIcon color="primary" sx={{ fontSize: 60, mb: 2 }} />
 					<Typography variant="h4" component="h1" gutterBottom>
-								Welcome to Issel
+								Welcome to ISSEL
 					</Typography>
 					<Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
 								Lorem Ipsum

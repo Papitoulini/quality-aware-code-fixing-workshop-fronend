@@ -100,7 +100,7 @@ const Question = () => {
 			setQuality(question?.analysis || {});
 			setHasNext(hasNextQuestion);
 		} else {
-			error("Σφάλμα κατά την ανάκτηση της ερώτησης");
+			error("Error while retrieving question");
 		}
 		setIsLoading(false);
 	};
@@ -133,13 +133,13 @@ const Question = () => {
 			id: "query",
 			type: "text",
 			multiline: true,
-			placeholder: "Η ερώτησή σας...",
+			placeholder: "Your Query",
 			minRows: 5,
 		},
 		{
 			customType: "radio",
 			id: "llm",
-			label: "Επιλέξτε το LLM που θέλετε να χρησιμοποιήσετε",
+			label: "Select the LLM to use",
 			color: "secondary",
 			defaultValue: "claude",
 			row: true,
@@ -152,7 +152,7 @@ const Question = () => {
 			customType: "button",
 			id: "submit",
 			type: "submit",
-			text: "Υποβολή",
+			text: "Submit",
 			color: "third",
 		},
 	];
@@ -264,18 +264,18 @@ const Question = () => {
 				{step === 2 && (
 					<Grid item width="100%">
 						<Typography variant="h6" className={classes.title}>
-							{"Χρησιμοποιήστε κάποιο LLM ή διορθώστε μόνοι σας τον κώδικα"}
+							{"Use an LLM to fix your code or try to fix it yourself"} 
 						</Typography>
 						<Typography className={classes.subtitle}>
 							{question?.question}
 						</Typography>
 						<Grid item className={classes.buttonArea}>
 							<ThirdBackgroundButton
-								title="Χρησιμοποίησε LLM"
+								title="Use an LLM"
 								onClick={openLLMPopup}
 							/>
 							<ThirdBackgroundButton
-								title="Ανάλυσε τον κώδικα"
+								title="Analyze The Code"
 								className={classes.secondButton}
 								onClick={analyzeCode}
 							/>
@@ -293,7 +293,7 @@ const Question = () => {
 						</Grid>
 						<Popup
 							width="auto"
-							title="Γράψτε το ερώτημά σας προς το LLM"
+							title="Write your query towards the LLM"
 							titleBackgroundColor="primary"
 							backgroundColor="white.main"
 							open={llmPopupOpen}
@@ -314,7 +314,7 @@ const Question = () => {
 				{step === 3 && (
 					<Grid item width="100%">
 						<Typography variant="h6" className={classes.title}>
-							{"Δείτε τις προτάσεις του συστήματος Quoly"}
+							{"Use the BroLine to fix the issue"}
 						</Typography>
 						<Typography className={classes.subtitle}>
 							{question?.question}
@@ -323,7 +323,7 @@ const Question = () => {
 						{!similarSnippetsFetched && (
 							<Grid item className={classes.recommendationsButtonArea}>
 								<Typography className={classes.recommendationsTitle}>
-									{"Αρχικός Κώδικας:"}
+									{"Initial Code Snippet:"}
 								</Typography>
 								<Box display="flex" alignItems="center">
 									<Typography color="primary">{"Claude"}</Typography>
@@ -336,7 +336,7 @@ const Question = () => {
 									<Typography color="primary">{"Llama"}</Typography>
 								</Box>
 								<ThirdBackgroundButton
-									title="Εύρεση Προτάσεων"
+									title="Fetch Fixes"
 									width="250px"
 									onClick={() => fetchSimilarSnippets(false)}
 								/>
@@ -346,18 +346,18 @@ const Question = () => {
 						{similarSnippetsFetched && (
 							<Grid item className={classes.recommendationsButtonArea}>
 								<Typography className={classes.recommendationsTitle}>
-									{`Πρόταση ${recommendationIndex + 1} από ${similarSnippets.length}:`}
+									{`Fix ${recommendationIndex + 1}`} 
 								</Typography>
 								<Box>
-									<SecondaryBackgroundButton title="Επιστροφή" onClick={backFromSnippets} className={classes.secondButton} />
+									<SecondaryBackgroundButton title="Return" onClick={backFromSnippets} className={classes.secondButton} />
 									<ThirdBackgroundButton
-										title="Προηγούμενη Πρόταση"
+										title="Previous Suggestion"
 										width="250px"
 										className={classes.secondButton}
 										onClick={previousRecommendation}
 									/>
 									<ThirdBackgroundButton
-										title="Επόμενη Πρόταση"
+										title="Next Suggestion"
 										width="200px"
 										className={classes.secondButton}
 										onClick={nextRecommendation}
@@ -387,24 +387,24 @@ const Question = () => {
 					<SecondaryBorderButton
 						title={
 							step === 1 && index === "1"
-								? "Προφίλ"
+								? "Profile"
 								: step === 1
-									? "Προηγούμενη Ερώτηση"
+									? "Previous Question"
 									: step === 2
-										? "Αρχικός Κώδικας"
-										: "Επεξεργασία"
+										? "Initial Code Snippet"
+										: "Edit"
 						}
 						onClick={previousStep}
 					/>
 					<SecondaryBackgroundButton
 						title={
 							step === 1
-								? "Επεξεργασία"
+								? "Edit"
 								: step === 2
-									? "Προτάσεις Quoly"
+									? "BroLine Recommendations"
 									: hasNext
-										? "Επόμενη Ερώτηση"
-										: "Ερωτηματολόγιο"
+										? "Next Question"
+										: "Questionnaire"
 						}
 						className={classes.secondButton}
 						onClick={nextStep}

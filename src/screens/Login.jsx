@@ -124,8 +124,8 @@ const UserRegistration = () => {
 			customType: "input",
 			id: "fullname",
 			type: "text",
-			label: "Ονοματεπώνυμο:",
-			placeholder: "Ονοματεπώνυμο",
+			label: "Name & Surname:",
+			placeholder: "Name & Surname",
 			defaultValue: user.fullname,
 			inputProps: {
 				endAdornment: (
@@ -141,8 +141,8 @@ const UserRegistration = () => {
 			customType: "input",
 			id: "email",
 			type: "email",
-			label: "Πανεπιστημιακό Email:",
-			placeholder: "Πανεπιστημιακό Email",
+			label: "Email:",
+			placeholder: "Email",
 			defaultValue: user.email,
 			inputProps: {
 				endAdornment: (
@@ -158,8 +158,8 @@ const UserRegistration = () => {
 			customType: "input",
 			id: "code",
 			type: "text",
-			label: "Κλειδί του WorkShop",
-			placeholder: "Κλειδί",
+			label: "WorkShop Key",
+			placeholder: "Key",
 			defaultValue: user.code,
 			inputProps: {
 				endAdornment: (
@@ -175,7 +175,7 @@ const UserRegistration = () => {
 			customType: "input",
 			id: "programmingExperience",
 			type: "number",
-			label: "Πόσα χρόνια ασχολείστε καθ' οποιοδήποτε τρόπο με τον προγραμματισμό;",
+			label: "How many years have you been programming in any way?",
 			placeholder: "0",
 			defaultValue: user?.experience?.programmingYears || 0,
 			inputProps: {
@@ -193,19 +193,19 @@ const UserRegistration = () => {
 			component: (
 				<Grid item className={classes.infoGrid}>
 					<Typography className={classes.info}>
-						<b>{"Τεχνικές Δεξιότητες:"}</b>
+						<b>{"Technical Skills:"}</b>
 					</Typography>
 					<Typography className={classes.info}>
-						{"• Επίπεδο 0 (δεν γνωρίζω)"}
+						{"• Level 0 (I have no idea)"}
 					</Typography>
 					<Typography className={classes.info}>
-						{"• Επίπεδο 1 (έχω διδαχθεί στη σχολή)"}
+						{"• Level 1 (I have been taught during my studies)"}
 					</Typography>
 					<Typography className={classes.info}>
-						{"• Επίπεδο 2 (έχω προγραμματίσει προσωπικά projects)"}
+						{"• Level 2 (I have done personal projects)"}
 					</Typography>
 					<Typography className={classes.info}>
-						{"• Επίπεδο 3 (έχω χρησιμοποιήσει επαγγελματικά)"}
+						{"• Level 3 (I have been working professionally)"}
 					</Typography>
 				</Grid>
 			),
@@ -213,57 +213,57 @@ const UserRegistration = () => {
 		{
 			customType: "radio",
 			id: "programmingLevel",
-			label: "Ποιο είναι το επίπεδο των γνώσεών σας στον προγραμματισμό λογισμικού;",
+			label: "What is your knowledge level regarding software engineering?",
 			color: "secondary",
 			defaultValue: user?.experience?.programmingLevel || 0,
 			row: true,
 			items: [
-				{ value: 0, label: "Επίπεδο 0" },
-				{ value: 1, label: "Επίπεδο 1" },
-				{ value: 2, label: "Επίπεδο 2" },
-				{ value: 3, label: "Επίπεδο 3" },
+				{ value: 0, label: "Level 0" },
+				{ value: 1, label: "Level 1" },
+				{ value: 2, label: "Level 2" },
+				{ value: 3, label: "Level 3" },
 			],
 		},
 		{
 			customType: "radio",
 			id: "javascriptLevel",
-			label: "Ποιο είναι το επίπεδο των γνώσεών σας στη γλώσσα προγραμματισμού JavaScript;",
+			label: "What is your knowledge level regarding JavaScript?",
 			color: "secondary",
 			defaultValue: user?.experience?.javascriptLevel || 0,
 			row: true,
 			items: [
-				{ value: 0, label: "Επίπεδο 0" },
-				{ value: 1, label: "Επίπεδο 1" },
-				{ value: 2, label: "Επίπεδο 2" },
-				{ value: 3, label: "Επίπεδο 3" },
+				{ value: 0, label: "Level 0" },
+				{ value: 1, label: "Level 1" },
+				{ value: 2, label: "Level 2" },
+				{ value: 3, label: "Level 3" },
 			],
 		},
 		{
 			customType: "radio",
 			id: "qualityLevel",
-			label: "Ποιο είναι το επίπεδο των γνώσεών σας σχετικά με ποιότητα λογισμικού;",
+			label: "What is your knowledge level regarding software security?",
 			color: "secondary",
 			defaultValue: user?.experience?.qualityLevel || 0,
 			row: true,
 			items: [
-				{ value: 0, label: "Επίπεδο 0" },
-				{ value: 1, label: "Επίπεδο 1" },
-				{ value: 2, label: "Επίπεδο 2" },
-				{ value: 3, label: "Επίπεδο 3" },
+				{ value: 0, label: "Level 0" },
+				{ value: 1, label: "Level 1" },
+				{ value: 2, label: "Level 2" },
+				{ value: 3, label: "Level 3" },
 			],
 		},
 		{
 			customType: "radio",
 			id: "llmLevel",
-			label: "Ποιο είναι το επίπεδο της εξοικείωσής σας με τα Μεγάλα Γλωσσικά Μοντέλα (Large Language Models – LLMs);",
+			label: "How accustomed are you with using LLMs (Large Language Models – LLMs)?",
 			color: "secondary",
 			defaultValue: user?.experience?.llmLevel || 0,
 			row: true,
 			items: [
-				{ value: 0, label: "Επίπεδο 0" },
-				{ value: 1, label: "Επίπεδο 1" },
-				{ value: 2, label: "Επίπεδο 2" },
-				{ value: 3, label: "Επίπεδο 3" },
+				{ value: 0, label: "Level 0" },
+				{ value: 1, label: "Level 1" },
+				{ value: 2, label: "Level 2" },
+				{ value: 3, label: "Level 3" },
 			],
 		},
 		{
@@ -271,15 +271,15 @@ const UserRegistration = () => {
 			id: "llmHow",
 			type: "text",
 			multiline: true,
-			label: "Έχετε χρησιμοποιήσει LLMs και πως;",
-			placeholder: "Η απάντησή σας...",
+			label: "Have you ever used any LLM? If yes, how?",
+			placeholder: "Answer",
 			defaultValue: user?.experience?.llmHow || "",
 			minRows: 5,
 		},
 		{
 			customType: "checkboxes",
 			id: "llmUsage",
-			label: "Αναφέρετε LLMs που έχετε χρησιμοποιήσει στο παρελθόν.",
+			label: "Please select the LLMs you have used:",
 			color: "secondary",
 			items: [
 				{ id: "gpt", defaultValue: user?.experience?.llmUsage?.gpt || false, label: "GPT" },
@@ -292,7 +292,7 @@ const UserRegistration = () => {
 			customType: "button",
 			id: "submit",
 			type: "submit",
-			text: "Επόμενο",
+			text: "Next",
 			color: "third",
 		},
 	];
