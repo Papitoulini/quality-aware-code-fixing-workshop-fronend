@@ -59,6 +59,18 @@ export const getUser = (id) => api.get(`user/${id}`);
 export const postQuestionnaire = (data, id) => api.post("questionnaire", { id, ...data });
 export const getQuestionnaire = (id) => api.get(`questionnaire/${id}`);
 export const getQuestion = (id) => api.get(`question/${id}`);
+export const explainLLM = (model, code, query, questionId, userId, description, analysis) => {
+	const path = `llms/claude/explain`;
+	const formData = new FormData();
+	const blob = new Blob([code], { type: 'application/javascript' });
+	formData.append('query', query);
+	formData.append('questionId', questionId);
+	formData.append('userId', userId);
+	formData.append('description', description);
+	formData.append('analysis', analysis);
+	formData.append('file', blob, 'file.js');
+	return rootApi.post(path, { body: formData }).json();
+};
 export const postToLLM = (model, code, query, questionId, userId) => {
 	const path = `llms/${model}`;
 	const formData = new FormData();

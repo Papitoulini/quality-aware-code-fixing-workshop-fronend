@@ -12,7 +12,7 @@ import Spinner from "../components/Spinner.jsx";
 import Switch from "../components/Switch.jsx";
 import { useSnackbar } from "../utils/index.js";
 import useGlobalState from "../use-global-state.js";
-import { getQuestion, getSimilarSnippets, postToLLM, postToQuality } from "../api/index.js";
+import { getQuestion, getSimilarSnippets, postToLLM, postToQuality, explainLLM } from "../api/index.js";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -177,6 +177,28 @@ const Question = () => {
 		setIsLoading(false);
 	};
 
+	const onExplainSubmit = async (values) => {
+		setIsLoading(true);
+		const { llm, query } = values;
+		const { success: postSuccess, message, ...response } = await explainLLM(
+			llm,
+			question?.code,
+			query,
+			question?._id,
+			id,
+			question?.description,
+			question?.analysis,
+		);
+		if (postSuccess) {
+			const { code: { new: newCode } = {} } = response;
+			if (newCode) setCode(newCode);
+			setLlmPopupOpen(false);
+		} else {
+			error(message);
+		}
+		setIsLoading(false);
+	};
+
 	const openLLMPopup = () => setLlmPopupOpen(true);
 
 	const analyzeCode = async () => {
@@ -271,7 +293,12 @@ const Question = () => {
 						</Typography>
 						<Grid item className={classes.buttonArea}>
 							<ThirdBackgroundButton
+								title="Understand The Issue"
+								onClick={onExplainSubmit}
+							/>
+							<ThirdBackgroundButton
 								title="Use an LLM"
+								className={classes.secondButton}
 								onClick={openLLMPopup}
 							/>
 							<ThirdBackgroundButton
