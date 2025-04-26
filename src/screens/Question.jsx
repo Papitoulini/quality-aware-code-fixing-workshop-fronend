@@ -97,7 +97,7 @@ const Question = () => {
 		if (fetchSuccess) {
 			setQuestion(question);
 			setCode(question?.code || "");
-			setQuality(question?.analysis || {});
+			setQuality(question?.analysis || []);
 			setHasNext(hasNextQuestion);
 		} else {
 			error("Error while retrieving question");
@@ -277,7 +277,6 @@ const Question = () => {
 								language="javascript"
 								editable={false}
 							/>
-							{console.log(quality)}
 							<FindingsTable findings={quality} />
 						</Grid>
 					</Grid>
@@ -405,7 +404,9 @@ const Question = () => {
 								language="javascript"
 								editable={false}
 							/>
-							<FindingsTable findings={quality} />
+							<FindingsTable findings={similarSnippetsFetched
+								? similarSnippets[recommendationIndex].quality
+								: question?.quality || ""} />
 						</Grid>
 					</Grid>
 				)}
