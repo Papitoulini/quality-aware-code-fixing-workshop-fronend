@@ -4,8 +4,8 @@ import useSWR from "swr";
 
 const {
 	VITE_SERVER_URL,
-	// VITE_SERVER_USERNAME,
-	// VITE_SERVER_PASSWORD,
+	VITE_SERVER_USERNAME,
+	VITE_SERVER_PASSWORD,
 } = import.meta.env;
 
 const rootApi = ky.extend({
@@ -17,9 +17,13 @@ const rootApi = ky.extend({
 		methods: ["get", "post", "put", "head", "delete", "options", "trace"],
 	},
 	hooks: {
-		// beforeRequest: [({ headers }) => {
-		// 	headers.set("x-access-token", Buffer.from(`${VITE_SERVER_USERNAME}:${VITE_SERVER_PASSWORD}`).toString("base64"));
-		// }],
+		beforeRequest: [(request) => {
+			const token = btoa(`${VITE_SERVER_USERNAME}:${VITE_SERVER_PASSWORD}`);
+
+			console.log(token, 33);
+			// set the standard header
+			request.headers.set("authorization", `Basic ${token}`);
+		}],
 		afterResponse: [
 			(_req, _opts, res) => {
 				const { status } = res;
