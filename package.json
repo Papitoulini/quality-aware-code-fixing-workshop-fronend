@@ -18,6 +18,7 @@
 		"build": "vite build",
 		"dev": "vite",
 		"lint": "eslint . -c eslint.config.js --cache",
+		"serve": "serve -s -l 3050 build",
 		"preview": "vite preview",
 		"test": "npm run lint",
 		"test:ci": "npm run lint && cypress run"
@@ -101,6 +102,7 @@
 		"react-router-dom": "^6.28.0",
 		"react-syntax-highlighter": "^15.6.1",
 		"remark-gfm": "^4.0.0",
+		"serve": "^14.2.4",
 		"styled-components": "^6.1.13",
 		"swr": "^2.2.5",
 		"typescript": "^5.6.3",
