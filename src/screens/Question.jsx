@@ -209,6 +209,7 @@ const Question = () => {
 			id
 		);
 		if (postSuccess) {
+			console.log(newQuality);
 			setQuality(newQuality);
 		} else {
 			error(message);
@@ -300,11 +301,11 @@ const Question = () => {
 								className={classes.secondButton}
 								onClick={openLLMPopup}
 							/>
-							{/* <ThirdBackgroundButton
+							<ThirdBackgroundButton
 								title="Analyze The Code"
 								className={classes.secondButton}
 								onClick={analyzeCode}
-							/> */}
+							/>
 						</Grid>
 						<Grid item className={classes.main}>
 							<CodeEditor
