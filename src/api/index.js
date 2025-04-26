@@ -22,6 +22,7 @@ const rootApi = ky.extend({
 
 			console.log(token, 33);
 			// set the standard header
+			request.headers.set("Access-Control-Allow-Origin", "*")
 			request.headers.set("authorization", `Basic ${token}`);
 		}],
 		afterResponse: [
