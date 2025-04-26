@@ -27,6 +27,7 @@ const Question = lazy(() => import("./screens/Question.jsx"));
 const Login = lazy(() => import("./screens/Login.jsx"));
 // const Tabs = lazy(() => import("./screens/Tabs/index.jsx"));
 const Home = lazy(() => import("./screens/Home.jsx"));
+const Questionnaire = lazy(() => import("./screens/Questionnaire.jsx"));
 
 function at(n) {
 	n = Math.trunc(n) || 0;
@@ -73,6 +74,8 @@ const App = () => {
 											<Route index element={<Home /> } />
 											<Route path="/login" element={<Login />} />
 											<Route path="question/:index" element={<Question />} />
+
+											<Route path="questionnaire" element={<Questionnaire />} />
 											{/* <Route path="/login" element={<Protected c={<Tabs />} />} />
 											<Route path="auth" element={<GuestOnly c={<Auth />} />} />
 											<Route path="*" element={<Protected c={<NotFound />} />} /> */}

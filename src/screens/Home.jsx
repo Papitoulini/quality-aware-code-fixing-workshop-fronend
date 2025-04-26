@@ -13,7 +13,7 @@ const Home = ({}) => {
 								Welcome to ISSEL
 					</Typography>
 					<Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
-								Lorem Ipsum
+								It is time to play! 
 					</Typography>
 					<Button
 						variant="contained"
@@ -28,7 +28,9 @@ const Home = ({}) => {
 
 				<Grid item xs={12} sx={{ mt: 4 }}>
 					<Typography variant="subtitle1" align="center" color="textSecondary">
-						Explain Something here
+						We are going to try and fix some of the security issues found with the help of LLMs.
+						<br />
+						And then we will utilize the <b>BroLine</b> and do the exact same thing!
 					</Typography>
 				</Grid>
 			</Grid>
