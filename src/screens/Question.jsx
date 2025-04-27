@@ -89,6 +89,7 @@ const Question = () => {
 	const [recommendationIndex, setRecommendationIndex] = useState(0);
 	const [responseId, setResponseId] = useState(null);
 	const [isFetchingAnalysis, setIsFetchingAnalysis] = useState(false);
+	const [isExplanation, setIsExplanation] = useState(false);
 	const id = useGlobalState((state) => state.id);
 	const pollingRef = useRef(null);
 	// helper for circular index
@@ -218,6 +219,7 @@ const Question = () => {
 		);
 		if (postSuccess) {
 			const { code: { new: newCode } = {} } = response;
+			console.log(step)
 			if (newCode) setCode(newCode);
 			setLlmPopupOpen(false);
 		} else {
@@ -242,6 +244,7 @@ const Question = () => {
 			const { code: { new: newCode } = {} } = response;
 			if (newCode) setCode(newCode);
 			setLlmPopupOpen(false);
+			setIsExplanation(true);
 		} else {
 			error(message);
 		}
@@ -277,8 +280,17 @@ const Question = () => {
 	};
 
 	const previousStep = () => {
+		console.log(step);
+		
 		if (step > 1) {
 			setStep(step - 1);
+			if (isExplanation) {
+				setIsExplanation(false);
+				setCode(question?.code || "");
+			}
+			if (step === 2) {
+				setCode(question?.code || "");
+			}
 		} else if (index > 1) {
 			navigate(`/question/${Number.parseInt(index) - 1}`);
 		} else {
@@ -370,7 +382,8 @@ const Question = () => {
 								? <Box sx={{ width: "100%", mt: 2 }}>
 									<LinearProgress color="primary" />
 								</Box>
-								: <FindingsTable findings={quality} /> }
+								: <FindingsTable findings={quality} /> 
+							}
 							
 						</Grid>
 						<Popup
