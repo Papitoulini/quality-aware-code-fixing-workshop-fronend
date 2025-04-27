@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Grid, Typography, Box } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -12,7 +12,7 @@ import Spinner from "../components/Spinner.jsx";
 import Switch from "../components/Switch.jsx";
 import { useSnackbar } from "../utils/index.js";
 import useGlobalState from "../use-global-state.js";
-import { getQuestion, getSimilarSnippets, postToLLM, postToQuality, explainLLM } from "../api/index.js";
+import { getQuestion, getSimilarSnippets, postToLLM, postToQuality, explainLLM, getUserResponse } from "../api/index.js";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -87,8 +87,9 @@ const Question = () => {
 	const [similarSnippets, setSimilarSnippets] = useState([]);
 	const [model, setModel] = useState("llama");
 	const [recommendationIndex, setRecommendationIndex] = useState(0);
+	const [responseId, setResponseId] = useState(null);
 	const id = useGlobalState((state) => state.id);
-
+	const pollingRef = useRef(null);
 	// helper for circular index
 
 	const fetchQuestion = async () => {
@@ -96,6 +97,7 @@ const Question = () => {
 		const { success: fetchSuccess, question, hasNext: hasNextQuestion } = await getQuestion(index);
 		if (fetchSuccess) {
 			setQuestion(question);
+			setResponseId(null);
 			setCode(question?.code || "");
 			setQuality(question?.analysis || []);
 			setHasNext(hasNextQuestion);
@@ -126,6 +128,48 @@ const Question = () => {
 		setRecommendationIndex(0);
 		setLlmPopupOpen(false);
 	}, [index]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Polling effect
+	useEffect(() => {
+		// If we don't have a responseId yet, do nothing
+		if (!responseId) return;
+	
+		// Define the polling function
+		const poll = async () => {
+			try {
+				const { status, quality: newQuality } = await getUserResponse(responseId);
+
+				console.log("Polling status:", status);
+				if (status === "completed") {
+				// update state and stop polling
+					setQuality(newQuality);
+					if (pollingRef.current) {
+						clearInterval(pollingRef.current);
+						pollingRef.current = null;
+					}
+				}
+			// if status is inProgress, just wait for the next tick
+			} catch {
+			// if there's an error, we probably want to bail out
+				if (pollingRef.current) {
+					clearInterval(pollingRef.current);
+					pollingRef.current = null;
+				}
+				error("Error while fetching analysis status");
+			}
+		};
+	
+		// start polling every 2 seconds
+		pollingRef.current = globalThis.setInterval(poll, 2000);
+	
+		// cleanup on unmount or id change
+		return () => {
+			if (pollingRef.current) {
+				clearInterval(pollingRef.current);
+				pollingRef.current = null;
+			}
+		};
+	}, [responseId, error]);
 
 	const llmFormContent = [
 		{
@@ -203,14 +247,13 @@ const Question = () => {
 
 	const analyzeCode = async () => {
 		setIsLoading(true);
-		const { success: postSuccess, message, quality: newQuality } = await postToQuality(
+		const { success: postSuccess, message, userResponseId } = await postToQuality(
 			code,
 			question?._id,
 			id
 		);
 		if (postSuccess) {
-			console.log(newQuality);
-			setQuality(newQuality);
+			setResponseId(userResponseId);
 		} else {
 			error(message);
 		}

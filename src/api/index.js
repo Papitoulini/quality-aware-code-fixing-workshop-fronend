@@ -20,7 +20,6 @@ const rootApi = ky.extend({
 		beforeRequest: [(request) => {
 			const token = btoa(`${VITE_SERVER_USERNAME}:${VITE_SERVER_PASSWORD}`);
 
-			console.log(token, 33);
 			// set the standard header
 			request.headers.set("Access-Control-Allow-Origin", "*")
 			request.headers.set("authorization", `Basic ${token}`);
@@ -64,6 +63,7 @@ export const getUser = (id) => api.get(`user/${id}`);
 export const postQuestionnaire = (data, id) => api.post("questionnaire", { id, ...data });
 export const getQuestionnaire = (id) => api.get(`questionnaire/${id}`);
 export const getQuestion = (id) => api.get(`question/${id}`);
+export const getUserResponse = (id) => api.get(`quality/${id}`);
 export const explainLLM = (model, code, query, questionId, userId, description, analysis) => {
 	const path = `llms/claude/explain`;
 	const formData = new FormData();
