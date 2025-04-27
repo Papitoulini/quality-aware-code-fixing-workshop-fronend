@@ -1,6 +1,6 @@
 import { memo, useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Grid, Typography, Box } from "@mui/material";
+import { Grid, Typography, Box, LinearProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import { SecondaryBackgroundButton, SecondaryBorderButton, ThirdBackgroundButton } from "../components/Buttons.jsx";
@@ -88,6 +88,7 @@ const Question = () => {
 	const [model, setModel] = useState("llama");
 	const [recommendationIndex, setRecommendationIndex] = useState(0);
 	const [responseId, setResponseId] = useState(null);
+	const [isFetchingAnalysis, setIsFetchingAnalysis] = useState(false);
 	const id = useGlobalState((state) => state.id);
 	const pollingRef = useRef(null);
 	// helper for circular index
@@ -133,36 +134,40 @@ const Question = () => {
 	useEffect(() => {
 		// If we don't have a responseId yet, do nothing
 		if (!responseId) return;
-	
+		
 		// Define the polling function
 		const poll = async () => {
 			try {
 				const { status, quality: newQuality } = await getUserResponse(responseId);
-
-				console.log("Polling status:", status);
+		
+				if (status === "inprogress") {
+					setIsFetchingAnalysis(true);
+					return;
+				}
+		
 				if (status === "completed") {
-				// update state and stop polling
 					setQuality(newQuality);
+					setIsFetchingAnalysis(false);
 					if (pollingRef.current) {
 						clearInterval(pollingRef.current);
 						pollingRef.current = null;
+						console.log("Polling interval cleared");
 					}
 				}
-			// if status is inProgress, just wait for the next tick
 			} catch {
-			// if there's an error, we probably want to bail out
 				if (pollingRef.current) {
 					clearInterval(pollingRef.current);
+					setIsFetchingAnalysis(false);
 					pollingRef.current = null;
 				}
 				error("Error while fetching analysis status");
 			}
 		};
-	
+		
 		// start polling every 2 seconds
 		pollingRef.current = globalThis.setInterval(poll, 2000);
-	
-		// cleanup on unmount or id change
+		
+		// cleanup on unmount or responseId change
 		return () => {
 			if (pollingRef.current) {
 				clearInterval(pollingRef.current);
@@ -254,6 +259,7 @@ const Question = () => {
 		);
 		if (postSuccess) {
 			setResponseId(userResponseId);
+			setIsFetchingAnalysis(true);
 		} else {
 			error(message);
 		}
@@ -359,7 +365,13 @@ const Question = () => {
 								editable={true}
 								setCode={setCode}
 							/>
-							<FindingsTable findings={quality} />
+
+							{ isFetchingAnalysis
+								? <Box sx={{ width: "100%", mt: 2 }}>
+									<LinearProgress color="primary" />
+								</Box>
+								: <FindingsTable findings={quality} /> }
+							
 						</Grid>
 						<Popup
 							width="auto"
