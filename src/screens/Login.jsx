@@ -85,7 +85,7 @@ const UserRegistration = () => {
 			fetchData(id);
 			console.log("a")
 		}
-	}, []);
+	}, [id]);
 
 	const onSubmit = async (values) => {
 		setIsLoading(true);
